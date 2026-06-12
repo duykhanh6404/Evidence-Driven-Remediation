@@ -1,0 +1,147 @@
+{
+  "nodes": [
+    {
+      "id": "edge-lb",
+      "tier": "edge"
+    },
+    {
+      "id": "auth-svc",
+      "tier": "api"
+    },
+    {
+      "id": "checkout-svc",
+      "tier": "api"
+    },
+    {
+      "id": "payment-svc",
+      "tier": "api"
+    },
+    {
+      "id": "cart-svc",
+      "tier": "api"
+    },
+    {
+      "id": "catalog-svc",
+      "tier": "api"
+    },
+    {
+      "id": "recommender-svc",
+      "tier": "ml"
+    },
+    {
+      "id": "inventory-svc",
+      "tier": "api"
+    },
+    {
+      "id": "notification-svc",
+      "tier": "api"
+    },
+    {
+      "id": "search-svc",
+      "tier": "api"
+    },
+    {
+      "id": "payments-db",
+      "tier": "store"
+    },
+    {
+      "id": "catalog-db",
+      "tier": "store"
+    },
+    {
+      "id": "cart-redis",
+      "tier": "store"
+    },
+    {
+      "id": "kafka-events",
+      "tier": "store"
+    }
+  ],
+  "edges": [
+    {
+      "from": "edge-lb",
+      "to": "auth-svc",
+      "protocol": "http"
+    },
+    {
+      "from": "edge-lb",
+      "to": "catalog-svc",
+      "protocol": "http"
+    },
+    {
+      "from": "edge-lb",
+      "to": "search-svc",
+      "protocol": "http"
+    },
+    {
+      "from": "edge-lb",
+      "to": "checkout-svc",
+      "protocol": "http"
+    },
+    {
+      "from": "checkout-svc",
+      "to": "cart-svc",
+      "protocol": "http"
+    },
+    {
+      "from": "checkout-svc",
+      "to": "payment-svc",
+      "protocol": "http"
+    },
+    {
+      "from": "checkout-svc",
+      "to": "inventory-svc",
+      "protocol": "http"
+    },
+    {
+      "from": "checkout-svc",
+      "to": "notification-svc",
+      "protocol": "kafka"
+    },
+    {
+      "from": "cart-svc",
+      "to": "cart-redis",
+      "protocol": "redis"
+    },
+    {
+      "from": "cart-svc",
+      "to": "catalog-svc",
+      "protocol": "http"
+    },
+    {
+      "from": "payment-svc",
+      "to": "payments-db",
+      "protocol": "postgres"
+    },
+    {
+      "from": "catalog-svc",
+      "to": "catalog-db",
+      "protocol": "postgres"
+    },
+    {
+      "from": "catalog-svc",
+      "to": "recommender-svc",
+      "protocol": "http"
+    },
+    {
+      "from": "recommender-svc",
+      "to": "catalog-db",
+      "protocol": "postgres"
+    },
+    {
+      "from": "search-svc",
+      "to": "catalog-db",
+      "protocol": "postgres"
+    },
+    {
+      "from": "inventory-svc",
+      "to": "catalog-db",
+      "protocol": "postgres"
+    },
+    {
+      "from": "notification-svc",
+      "to": "kafka-events",
+      "protocol": "kafka"
+    }
+  ]
+}

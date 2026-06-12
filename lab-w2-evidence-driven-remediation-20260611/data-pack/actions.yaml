@@ -1,0 +1,36 @@
+- name: rollback_service
+  params: [service, target_version]
+  cost_min: 10
+  downtime_min: 2
+  blast_radius_services: 1
+  rollback_window_sec: 60
+- name: increase_pool_size
+  params: [service, from_value, to_value]
+  cost_min: 1
+  downtime_min: 0
+  blast_radius_services: 1
+  rollback_window_sec: 30
+- name: restart_pod
+  params: [service, pod_selector]
+  cost_min: 2
+  downtime_min: 1
+  blast_radius_services: 1
+  rollback_window_sec: 90
+- name: dns_config_rollback
+  params: [configmap_name, target_revision]
+  cost_min: 5
+  downtime_min: 3
+  blast_radius_services: 3
+  rollback_window_sec: 120
+- name: network_policy_revert
+  params: [policy_name]
+  cost_min: 15
+  downtime_min: 5
+  blast_radius_services: 4
+  rollback_window_sec: 180
+- name: page_oncall
+  params: [team]
+  cost_min: 0
+  downtime_min: 0
+  blast_radius_services: 0
+  rollback_window_sec: 0

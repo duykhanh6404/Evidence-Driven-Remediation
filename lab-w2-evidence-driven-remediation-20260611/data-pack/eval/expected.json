@@ -1,0 +1,106 @@
+{
+  "E01": {
+    "accepted_actions": [
+      {
+        "name": "rollback_service",
+        "params": {
+          "service": "payment-svc"
+        }
+      },
+      {
+        "name": "increase_pool_size",
+        "params": {
+          "service": "payment-svc"
+        }
+      }
+    ],
+    "must_not_action": "page_oncall",
+    "notes": "Pool exhaustion + clear historical match \u2014 engine should auto-recommend, not escalate."
+  },
+  "E02": {
+    "accepted_actions": [
+      {
+        "name": "page_oncall"
+      }
+    ],
+    "notes": "TLS cert rotation is cert-ops, human-only. Auto-action is wrong."
+  },
+  "E03": {
+    "accepted_actions": [
+      {
+        "name": "restart_pod",
+        "params": {
+          "service": "esb"
+        }
+      },
+      {
+        "name": "rollback_service",
+        "params": {
+          "service": "esb"
+        }
+      }
+    ],
+    "must_not_action": "page_oncall"
+  },
+  "E04": {
+    "accepted_actions": [
+      {
+        "name": "dns_config_rollback"
+      },
+      {
+        "name": "page_oncall"
+      }
+    ],
+    "notes": "Infra layer \u2014 either action is acceptable; auto rollback is preferred but page is acceptable."
+  },
+  "E05": {
+    "accepted_actions": [
+      {
+        "name": "rollback_service",
+        "params": {
+          "service": "payment-svc"
+        }
+      },
+      {
+        "name": "page_oncall"
+      }
+    ],
+    "notes": "Outcome-weighted voting should tie-break. Either acceptable but explanation must show vote weights."
+  },
+  "E06": {
+    "accepted_actions": [
+      {
+        "name": "restart_pod",
+        "params": {
+          "service": "cart-svc"
+        }
+      },
+      {
+        "name": "page_oncall"
+      }
+    ],
+    "notes": "Conflicting evidence \u2014 engine that trusts logs alone picks payment-svc (wrong). Trace anomaly says cart-svc -> cart-redis. Page is also acceptable; auto rollback of payment-svc is the wrong answer."
+  },
+  "E07": {
+    "accepted_actions": [
+      {
+        "name": "page_oncall"
+      }
+    ],
+    "notes": "OOD \u2014 no historical incident closely matches this. Engine must escalate. Any auto-action is wrong."
+  },
+  "E08": {
+    "accepted_actions": [
+      {
+        "name": "page_oncall"
+      },
+      {
+        "name": "rollback_service",
+        "params": {
+          "service": "t24-service"
+        }
+      }
+    ],
+    "notes": "Alert fires on bb-edge (leaf cascade). True root is t24-service (deepest, drifts first). Auto-rollbacking bb-edge is wrong. Page or t24 action is acceptable."
+  }
+}

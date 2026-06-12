@@ -1,0 +1,890 @@
+[
+  {
+    "id": "INC-2025-06-12",
+    "root_cause_class": "slow_query",
+    "affected_services": [
+      "catalog-svc",
+      "catalog-db"
+    ],
+    "log_signatures": [
+      "query took longer than threshold",
+      "DB query latency > 5s on table"
+    ],
+    "trace_signatures": [
+      {
+        "from": "catalog-svc",
+        "to": "catalog-db",
+        "p99_deviation_ratio": 3.1,
+        "error_rate": 0.03
+      }
+    ],
+    "metric_signatures": [
+      {
+        "service": "catalog-db",
+        "metric": "latency_p99_ms",
+        "delta": "200 -> 5400"
+      },
+      {
+        "service": "catalog-db",
+        "metric": "db_query_count",
+        "delta": "100 -> 50"
+      }
+    ],
+    "actions_taken": [
+      "page_oncall:platform-team"
+    ],
+    "outcome": "success",
+    "mttr_minutes": 58
+  },
+  {
+    "id": "INC-2025-07-04",
+    "root_cause_class": "lock_contention",
+    "affected_services": [
+      "payment-svc",
+      "payments-db",
+      "checkout-svc"
+    ],
+    "log_signatures": [
+      "deadlock detected on table",
+      "lock timeout exceeded after"
+    ],
+    "trace_signatures": [
+      {
+        "from": "payment-svc",
+        "to": "payments-db",
+        "p99_deviation_ratio": 2.0,
+        "error_rate": 0.12
+      }
+    ],
+    "metric_signatures": [
+      {
+        "service": "payments-db",
+        "metric": "lock_wait_ms",
+        "delta": "10 -> 800"
+      }
+    ],
+    "actions_taken": [
+      "restart_pod:payments-db:default"
+    ],
+    "outcome": "success",
+    "mttr_minutes": 22
+  },
+  {
+    "id": "INC-2025-07-19",
+    "root_cause_class": "eviction",
+    "affected_services": [
+      "checkout-svc",
+      "cart-svc",
+      "cart-redis"
+    ],
+    "log_signatures": [
+      "Pod evicted: node out of memory",
+      "cgroup OOM kill"
+    ],
+    "trace_signatures": [
+      {
+        "from": "checkout-svc",
+        "to": "cart-redis",
+        "p99_deviation_ratio": 2.5,
+        "error_rate": 0.3
+      }
+    ],
+    "metric_signatures": [
+      {
+        "service": "cart-redis",
+        "metric": "pod_restart_count",
+        "delta": "0 -> 12"
+      }
+    ],
+    "actions_taken": [
+      "page_oncall:platform-team"
+    ],
+    "outcome": "success",
+    "mttr_minutes": 45
+  },
+  {
+    "id": "INC-2025-08-02",
+    "root_cause_class": "memory_leak",
+    "affected_services": [
+      "recommender-svc"
+    ],
+    "log_signatures": [
+      "OutOfMemoryError: Java heap space",
+      "GC pause: 4127ms (full GC, heap"
+    ],
+    "trace_signatures": [],
+    "metric_signatures": [
+      {
+        "service": "recommender-svc",
+        "metric": "mem_mb",
+        "delta": "270 -> 980"
+      },
+      {
+        "service": "recommender-svc",
+        "metric": "gc_pause_ms",
+        "delta": "50 -> 4000"
+      }
+    ],
+    "actions_taken": [
+      "rollback_service:recommender-svc:previous",
+      "rollback_service:recommender-svc:previous"
+    ],
+    "outcome": "success",
+    "mttr_minutes": 90
+  },
+  {
+    "id": "INC-2025-08-17",
+    "root_cause_class": "tls_expiry",
+    "affected_services": [
+      "edge-lb"
+    ],
+    "log_signatures": [
+      "TLS handshake failed: certificate has expired",
+      "x509: certificate signed by unknown authority"
+    ],
+    "trace_signatures": [],
+    "metric_signatures": [
+      {
+        "service": "edge-lb",
+        "metric": "tls_handshake_failures",
+        "delta": "0 -> 300"
+      },
+      {
+        "service": "edge-lb",
+        "metric": "error_rate",
+        "delta": "0.001 -> 1.0"
+      }
+    ],
+    "actions_taken": [
+      "page_oncall:platform-team"
+    ],
+    "outcome": "success",
+    "mttr_minutes": 15
+  },
+  {
+    "id": "INC-2025-09-05",
+    "root_cause_class": "connection_pool_exhaustion",
+    "affected_services": [
+      "payment-svc",
+      "payments-db"
+    ],
+    "log_signatures": [
+      "ConnectionPool: timeout acquiring connection",
+      "Failed to forward request: pool exhausted"
+    ],
+    "trace_signatures": [
+      {
+        "from": "payments-db",
+        "to": "payment-svc",
+        "p99_deviation_ratio": 2.4,
+        "error_rate": 0.18
+      }
+    ],
+    "metric_signatures": [
+      {
+        "service": "payment-svc",
+        "metric": "conn_pool_used",
+        "delta": "30 -> 95"
+      },
+      {
+        "service": "payment-svc",
+        "metric": "latency_p99_ms",
+        "delta": "400 -> 1800"
+      }
+    ],
+    "actions_taken": [
+      "rollback_service:payment-svc:previous",
+      "increase_pool_size:payment-svc:50:100"
+    ],
+    "outcome": "success",
+    "mttr_minutes": 18
+  },
+  {
+    "id": "INC-2025-09-21",
+    "root_cause_class": "slow_query",
+    "affected_services": [
+      "search-svc",
+      "catalog-db"
+    ],
+    "log_signatures": [
+      "query took longer than threshold",
+      "DB query latency > 5s on table"
+    ],
+    "trace_signatures": [
+      {
+        "from": "search-svc",
+        "to": "catalog-db",
+        "p99_deviation_ratio": 3.1,
+        "error_rate": 0.03
+      }
+    ],
+    "metric_signatures": [
+      {
+        "service": "catalog-db",
+        "metric": "latency_p99_ms",
+        "delta": "200 -> 5400"
+      },
+      {
+        "service": "catalog-db",
+        "metric": "db_query_count",
+        "delta": "100 -> 50"
+      }
+    ],
+    "actions_taken": [
+      "page_oncall:platform-team"
+    ],
+    "outcome": "success",
+    "mttr_minutes": 38
+  },
+  {
+    "id": "INC-2025-10-03",
+    "root_cause_class": "rebalance_storm",
+    "affected_services": [
+      "notification-svc",
+      "kafka-events"
+    ],
+    "log_signatures": [
+      "consumer rebalance triggered",
+      "partition reassignment in progress"
+    ],
+    "trace_signatures": [
+      {
+        "from": "notification-svc",
+        "to": "kafka-events",
+        "p99_deviation_ratio": 4.0,
+        "error_rate": 0.4
+      }
+    ],
+    "metric_signatures": [
+      {
+        "service": "kafka-events",
+        "metric": "consumer_lag",
+        "delta": "100 -> 50000"
+      }
+    ],
+    "actions_taken": [
+      "increase_pool_size:kafka-events:50:100"
+    ],
+    "outcome": "success",
+    "mttr_minutes": 52
+  },
+  {
+    "id": "INC-2025-10-15",
+    "root_cause_class": "infinite_retry",
+    "affected_services": [
+      "checkout-svc",
+      "inventory-svc"
+    ],
+    "log_signatures": [
+      "Retry exhausted after 5 attempts",
+      "fallback failed, retrying request"
+    ],
+    "trace_signatures": [
+      {
+        "from": "checkout-svc",
+        "to": "inventory-svc",
+        "p99_deviation_ratio": 5.0,
+        "error_rate": 0.65
+      }
+    ],
+    "metric_signatures": [
+      {
+        "service": "inventory-svc",
+        "metric": "retry_count_per_min",
+        "delta": "5 -> 800"
+      }
+    ],
+    "actions_taken": [
+      "page_oncall:platform-team"
+    ],
+    "outcome": "success",
+    "mttr_minutes": 28
+  },
+  {
+    "id": "INC-2025-10-28",
+    "root_cause_class": "model_drift",
+    "affected_services": [
+      "recommender-svc"
+    ],
+    "log_signatures": [
+      "feature distribution drift detected on field",
+      "model inference confidence dropped below threshold"
+    ],
+    "trace_signatures": [],
+    "metric_signatures": [
+      {
+        "service": "recommender-svc",
+        "metric": "feature_drift_score",
+        "delta": "0.05 -> 0.62"
+      }
+    ],
+    "actions_taken": [
+      "page_oncall:platform-team"
+    ],
+    "outcome": "success",
+    "mttr_minutes": 240
+  },
+  {
+    "id": "INC-2025-11-08",
+    "root_cause_class": "connection_pool_exhaustion",
+    "affected_services": [
+      "payment-svc",
+      "payments-db",
+      "checkout-svc"
+    ],
+    "log_signatures": [
+      "ConnectionPool: timeout acquiring connection",
+      "Failed to forward request: pool exhausted"
+    ],
+    "trace_signatures": [
+      {
+        "from": "checkout-svc",
+        "to": "payment-svc",
+        "p99_deviation_ratio": 2.4,
+        "error_rate": 0.18
+      }
+    ],
+    "metric_signatures": [
+      {
+        "service": "payment-svc",
+        "metric": "conn_pool_used",
+        "delta": "30 -> 95"
+      },
+      {
+        "service": "payment-svc",
+        "metric": "latency_p99_ms",
+        "delta": "400 -> 1800"
+      }
+    ],
+    "actions_taken": [
+      "rollback_service:payment-svc:previous",
+      "increase_pool_size:payment-svc:50:100"
+    ],
+    "outcome": "success",
+    "mttr_minutes": 19
+  },
+  {
+    "id": "INC-2025-11-19",
+    "root_cause_class": "rate_limit_misconfig",
+    "affected_services": [
+      "auth-svc"
+    ],
+    "log_signatures": [
+      "rate limit exceeded for client",
+      "429 returned to upstream"
+    ],
+    "trace_signatures": [],
+    "metric_signatures": [
+      {
+        "service": "auth-svc",
+        "metric": "rate_limit_hit_rate",
+        "delta": "0.01 -> 0.45"
+      }
+    ],
+    "actions_taken": [
+      "page_oncall:platform-team"
+    ],
+    "outcome": "success",
+    "mttr_minutes": 14
+  },
+  {
+    "id": "INC-2025-12-01",
+    "root_cause_class": "vacuum_storm",
+    "affected_services": [
+      "catalog-svc",
+      "catalog-db",
+      "search-svc"
+    ],
+    "log_signatures": [
+      "degraded behavior detected",
+      "service error rate elevated"
+    ],
+    "trace_signatures": [
+      {
+        "from": "catalog-svc",
+        "to": "catalog-db",
+        "p99_deviation_ratio": 1.8,
+        "error_rate": 0.1
+      }
+    ],
+    "metric_signatures": [
+      {
+        "service": "catalog-db",
+        "metric": "latency_p99_ms",
+        "delta": "200 -> 600"
+      }
+    ],
+    "actions_taken": [
+      "page_oncall:platform-team"
+    ],
+    "outcome": "success",
+    "mttr_minutes": 75
+  },
+  {
+    "id": "INC-2025-12-12",
+    "root_cause_class": "config_push",
+    "affected_services": [
+      "edge-lb",
+      "auth-svc"
+    ],
+    "log_signatures": [
+      "degraded behavior detected",
+      "service error rate elevated"
+    ],
+    "trace_signatures": [
+      {
+        "from": "auth-svc",
+        "to": "edge-lb",
+        "p99_deviation_ratio": 1.8,
+        "error_rate": 0.1
+      }
+    ],
+    "metric_signatures": [
+      {
+        "service": "edge-lb",
+        "metric": "latency_p99_ms",
+        "delta": "200 -> 600"
+      }
+    ],
+    "actions_taken": [
+      "rollback_service:edge-lb:previous"
+    ],
+    "outcome": "success",
+    "mttr_minutes": 7
+  },
+  {
+    "id": "INC-2026-01-04",
+    "root_cause_class": "thread_starvation",
+    "affected_services": [
+      "payment-svc"
+    ],
+    "log_signatures": [
+      "degraded behavior detected",
+      "service error rate elevated"
+    ],
+    "trace_signatures": [],
+    "metric_signatures": [
+      {
+        "service": "payment-svc",
+        "metric": "latency_p99_ms",
+        "delta": "200 -> 600"
+      }
+    ],
+    "actions_taken": [
+      "page_oncall:platform-team"
+    ],
+    "outcome": "success",
+    "mttr_minutes": 25
+  },
+  {
+    "id": "INC-2026-01-18",
+    "root_cause_class": "cache_stampede",
+    "affected_services": [
+      "inventory-svc"
+    ],
+    "log_signatures": [
+      "degraded behavior detected",
+      "service error rate elevated"
+    ],
+    "trace_signatures": [],
+    "metric_signatures": [
+      {
+        "service": "inventory-svc",
+        "metric": "latency_p99_ms",
+        "delta": "200 -> 600"
+      }
+    ],
+    "actions_taken": [
+      "page_oncall:platform-team"
+    ],
+    "outcome": "success",
+    "mttr_minutes": 22
+  },
+  {
+    "id": "INC-2026-01-29",
+    "root_cause_class": "n_plus_1",
+    "affected_services": [
+      "search-svc",
+      "catalog-db"
+    ],
+    "log_signatures": [
+      "degraded behavior detected",
+      "service error rate elevated"
+    ],
+    "trace_signatures": [
+      {
+        "from": "catalog-db",
+        "to": "search-svc",
+        "p99_deviation_ratio": 1.8,
+        "error_rate": 0.1
+      }
+    ],
+    "metric_signatures": [
+      {
+        "service": "search-svc",
+        "metric": "latency_p99_ms",
+        "delta": "200 -> 600"
+      }
+    ],
+    "actions_taken": [
+      "page_oncall:platform-team"
+    ],
+    "outcome": "success",
+    "mttr_minutes": 48
+  },
+  {
+    "id": "INC-2026-02-08",
+    "root_cause_class": "downstream_provider",
+    "affected_services": [
+      "notification-svc"
+    ],
+    "log_signatures": [
+      "degraded behavior detected",
+      "service error rate elevated"
+    ],
+    "trace_signatures": [],
+    "metric_signatures": [
+      {
+        "service": "notification-svc",
+        "metric": "latency_p99_ms",
+        "delta": "200 -> 600"
+      }
+    ],
+    "actions_taken": [
+      "page_oncall:platform-team"
+    ],
+    "outcome": "success",
+    "mttr_minutes": 35
+  },
+  {
+    "id": "INC-2026-02-22",
+    "root_cause_class": "network_partition",
+    "affected_services": [
+      "cart-svc",
+      "cart-redis"
+    ],
+    "log_signatures": [
+      "degraded behavior detected",
+      "service error rate elevated"
+    ],
+    "trace_signatures": [
+      {
+        "from": "cart-svc",
+        "to": "cart-redis",
+        "p99_deviation_ratio": 1.8,
+        "error_rate": 0.1
+      }
+    ],
+    "metric_signatures": [
+      {
+        "service": "cart-redis",
+        "metric": "latency_p99_ms",
+        "delta": "200 -> 600"
+      }
+    ],
+    "actions_taken": [
+      "page_oncall:platform-team"
+    ],
+    "outcome": "success",
+    "mttr_minutes": 9
+  },
+  {
+    "id": "INC-2026-03-07",
+    "root_cause_class": "batch_overlap",
+    "affected_services": [
+      "recommender-svc",
+      "catalog-db"
+    ],
+    "log_signatures": [
+      "degraded behavior detected",
+      "service error rate elevated"
+    ],
+    "trace_signatures": [
+      {
+        "from": "catalog-db",
+        "to": "recommender-svc",
+        "p99_deviation_ratio": 1.8,
+        "error_rate": 0.1
+      }
+    ],
+    "metric_signatures": [
+      {
+        "service": "recommender-svc",
+        "metric": "latency_p99_ms",
+        "delta": "200 -> 600"
+      }
+    ],
+    "actions_taken": [
+      "page_oncall:platform-team"
+    ],
+    "outcome": "partial",
+    "mttr_minutes": 32
+  },
+  {
+    "id": "INC-2026-03-20",
+    "root_cause_class": "ddos",
+    "affected_services": [
+      "edge-lb",
+      "checkout-svc",
+      "payment-svc"
+    ],
+    "log_signatures": [
+      "degraded behavior detected",
+      "service error rate elevated"
+    ],
+    "trace_signatures": [
+      {
+        "from": "payment-svc",
+        "to": "edge-lb",
+        "p99_deviation_ratio": 1.8,
+        "error_rate": 0.1
+      }
+    ],
+    "metric_signatures": [
+      {
+        "service": "edge-lb",
+        "metric": "latency_p99_ms",
+        "delta": "200 -> 600"
+      }
+    ],
+    "actions_taken": [
+      "page_oncall:platform-team"
+    ],
+    "outcome": "partial",
+    "mttr_minutes": 95
+  },
+  {
+    "id": "INC-2026-04-02",
+    "root_cause_class": "deadlock",
+    "affected_services": [
+      "checkout-svc"
+    ],
+    "log_signatures": [
+      "degraded behavior detected",
+      "service error rate elevated"
+    ],
+    "trace_signatures": [],
+    "metric_signatures": [
+      {
+        "service": "checkout-svc",
+        "metric": "latency_p99_ms",
+        "delta": "200 -> 600"
+      }
+    ],
+    "actions_taken": [
+      "page_oncall:platform-team"
+    ],
+    "outcome": "partial",
+    "mttr_minutes": 26
+  },
+  {
+    "id": "INC-2026-04-15",
+    "root_cause_class": "bad_deploy",
+    "affected_services": [
+      "catalog-svc",
+      "recommender-svc"
+    ],
+    "log_signatures": [
+      "degraded behavior detected",
+      "service error rate elevated"
+    ],
+    "trace_signatures": [
+      {
+        "from": "recommender-svc",
+        "to": "catalog-svc",
+        "p99_deviation_ratio": 1.8,
+        "error_rate": 0.1
+      }
+    ],
+    "metric_signatures": [
+      {
+        "service": "catalog-svc",
+        "metric": "latency_p99_ms",
+        "delta": "200 -> 600"
+      }
+    ],
+    "actions_taken": [
+      "rollback_service:catalog-svc:previous"
+    ],
+    "outcome": "partial",
+    "mttr_minutes": 11
+  },
+  {
+    "id": "INC-2026-04-26",
+    "root_cause_class": "slow_query",
+    "affected_services": [
+      "auth-svc",
+      "payments-db"
+    ],
+    "log_signatures": [
+      "query took longer than threshold",
+      "DB query latency > 5s on table"
+    ],
+    "trace_signatures": [
+      {
+        "from": "auth-svc",
+        "to": "payments-db",
+        "p99_deviation_ratio": 3.1,
+        "error_rate": 0.03
+      }
+    ],
+    "metric_signatures": [
+      {
+        "service": "payments-db",
+        "metric": "latency_p99_ms",
+        "delta": "200 -> 5400"
+      },
+      {
+        "service": "payments-db",
+        "metric": "db_query_count",
+        "delta": "100 -> 50"
+      }
+    ],
+    "actions_taken": [
+      "page_oncall:platform-team"
+    ],
+    "outcome": "partial",
+    "mttr_minutes": 55
+  },
+  {
+    "id": "INC-2026-05-10",
+    "root_cause_class": "connection_pool_exhaustion",
+    "affected_services": [
+      "payment-svc",
+      "payments-db"
+    ],
+    "log_signatures": [
+      "ConnectionPool: timeout acquiring connection",
+      "Failed to forward request: pool exhausted"
+    ],
+    "trace_signatures": [
+      {
+        "from": "payments-db",
+        "to": "payment-svc",
+        "p99_deviation_ratio": 2.4,
+        "error_rate": 0.18
+      }
+    ],
+    "metric_signatures": [
+      {
+        "service": "payment-svc",
+        "metric": "conn_pool_used",
+        "delta": "30 -> 95"
+      },
+      {
+        "service": "payment-svc",
+        "metric": "latency_p99_ms",
+        "delta": "400 -> 1800"
+      }
+    ],
+    "actions_taken": [
+      "rollback_service:payment-svc:previous"
+    ],
+    "outcome": "partial",
+    "mttr_minutes": 12
+  },
+  {
+    "id": "INC-2026-05-18",
+    "root_cause_class": "feature_flag",
+    "affected_services": [
+      "notification-svc"
+    ],
+    "log_signatures": [
+      "degraded behavior detected",
+      "service error rate elevated"
+    ],
+    "trace_signatures": [],
+    "metric_signatures": [
+      {
+        "service": "notification-svc",
+        "metric": "latency_p99_ms",
+        "delta": "200 -> 600"
+      }
+    ],
+    "actions_taken": [
+      "page_oncall:platform-team"
+    ],
+    "outcome": "partial",
+    "mttr_minutes": 8
+  },
+  {
+    "id": "INC-2026-05-25",
+    "root_cause_class": "cache_cold_start",
+    "affected_services": [
+      "search-svc"
+    ],
+    "log_signatures": [
+      "degraded behavior detected",
+      "service error rate elevated"
+    ],
+    "trace_signatures": [],
+    "metric_signatures": [
+      {
+        "service": "search-svc",
+        "metric": "latency_p99_ms",
+        "delta": "200 -> 600"
+      }
+    ],
+    "actions_taken": [
+      "page_oncall:platform-team"
+    ],
+    "outcome": "failed",
+    "mttr_minutes": 15
+  },
+  {
+    "id": "INC-2026-05-30",
+    "root_cause_class": "replication_lag",
+    "affected_services": [
+      "inventory-svc",
+      "catalog-db"
+    ],
+    "log_signatures": [
+      "degraded behavior detected",
+      "service error rate elevated"
+    ],
+    "trace_signatures": [
+      {
+        "from": "inventory-svc",
+        "to": "catalog-db",
+        "p99_deviation_ratio": 1.8,
+        "error_rate": 0.1
+      }
+    ],
+    "metric_signatures": [
+      {
+        "service": "catalog-db",
+        "metric": "latency_p99_ms",
+        "delta": "200 -> 600"
+      }
+    ],
+    "actions_taken": [
+      "page_oncall:platform-team"
+    ],
+    "outcome": "failed",
+    "mttr_minutes": 18
+  },
+  {
+    "id": "INC-2026-06-02",
+    "root_cause_class": "data_pipeline_lag",
+    "affected_services": [
+      "recommender-svc"
+    ],
+    "log_signatures": [
+      "degraded behavior detected",
+      "service error rate elevated"
+    ],
+    "trace_signatures": [],
+    "metric_signatures": [
+      {
+        "service": "recommender-svc",
+        "metric": "latency_p99_ms",
+        "delta": "200 -> 600"
+      }
+    ],
+    "actions_taken": [
+      "page_oncall:platform-team"
+    ],
+    "outcome": "failed",
+    "mttr_minutes": 30
+  }
+]
